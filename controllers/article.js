@@ -35,13 +35,20 @@ exports.createArticle = async (req, res, next) => {
             throw error;
         }
 
-        const title = req.body.title;
-        const content = req.body.content;
+        const title_1 = req.body.title_1;
+        const title_2 = req.body.title_2;
+        const content_1 = req.body.content_1;
+        const content_2 = req.body.content_2;
+        const author = req.body.author;
+
 
         const article = new Article({
-            title: title,
-            content: content,
-            imageUrl: req.files.map(file => file.path.replace(/\\/g, '/'))
+            title_1: title_1,
+            title_2: title_2,
+            content_1: content_1,
+            content_2: content_2,
+            imageUrl: req.files.map(file => file.path.replace(/\\/g, '/')),
+            author: author,
         });
         const articleResults = await article.save();
 

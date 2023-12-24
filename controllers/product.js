@@ -35,10 +35,14 @@ exports.createProduct = async (req, res, next) => {
 
         const title = req.body.title;
         const content = req.body.content;
+        const productCode = req.body.productCode;
+        const category = req.body.category;
 
         const product = new Product({
             title: title,
             content: content,
+            productCode : productCode,
+            category : category,
             imageUrl: req.files.map(file => file.path.replace(/\\/g, '/'))
         });
         const productResults = await product.save();

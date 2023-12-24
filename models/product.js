@@ -13,6 +13,14 @@ const productSchema = new Schema({
     imageUrl: {
         type: [String],
         required: false
+    },
+    productCode: {
+        type: String,
+        required: true
+    },
+    category: {
+        type: String,
+        required: true,
     }
 }, {
     timestamps: true,
