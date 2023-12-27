@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const productRoute = require('./routes/product');
 const articleRoute = require('./routes/article');
+const bestSellingRoute = require('./routes/bestSelling');
+const equippedGymRoute = require('./routes/equippedGym');
 const bodyParser = require('body-parser');
 const multer = require('multer');
 const path = require('path');
@@ -28,12 +30,11 @@ const upload = multer({
     fileFilter: fileFilter,
 });
 
-
 app.use(cors());
 app.use(bodyParser.json());
 app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use(upload.array('image', 4));
-app.use('/api', productRoute, articleRoute);
+app.use('/api', productRoute, articleRoute, bestSellingRoute, equippedGymRoute);
 app.use((error, req, res, next) => {
     console.log(error);
     const status = error.statusCode || 500;
