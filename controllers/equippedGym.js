@@ -82,3 +82,5 @@ exports.getSingleEquippedGym = async (req, res, next) => {
         next(error);
     }
 }
+
+

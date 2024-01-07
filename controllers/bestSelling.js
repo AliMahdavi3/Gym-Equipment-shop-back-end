@@ -80,3 +80,4 @@ exports.getSingleBestSelling = async (req, res, next) => {
         next(error);
     }
 }
+
