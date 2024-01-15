@@ -5,6 +5,7 @@ const productRoute = require('./routes/product');
 const articleRoute = require('./routes/article');
 const bestSellingRoute = require('./routes/bestSelling');
 const equippedGymRoute = require('./routes/equippedGym');
+const authRoute = require('./routes/auth');
 const bodyParser = require('body-parser');
 const multer = require('multer');
 const path = require('path');
@@ -35,6 +36,7 @@ app.use(bodyParser.json());
 app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use(upload.array('image', 4));
 app.use('/api', productRoute, articleRoute, bestSellingRoute, equippedGymRoute);
+app.use('/auth', authRoute);
 app.use((error, req, res, next) => {
     console.log(error);
     const status = error.statusCode || 500;
