@@ -1,6 +1,7 @@
 const { validationResult } = require('express-validator');
 const Article = require('../models/article');
 const path = require('path');
+const fs = require('fs');
 
 
 exports.getArticles = async (req, res, next) => {
@@ -35,18 +36,14 @@ exports.createArticle = async (req, res, next) => {
             throw error;
         }
 
-        const title_1 = req.body.title_1;
-        const title_2 = req.body.title_2;
-        const content_1 = req.body.content_1;
-        const content_2 = req.body.content_2;
+        const title = req.body.title;
+        const content = req.body.content;
         const author = req.body.author;
 
 
         const article = new Article({
-            title_1: title_1,
-            title_2: title_2,
-            content_1: content_1,
-            content_2: content_2,
+            title: title,
+            content: content,
             imageUrl: req.files.map(file => file.path.replace(/\\/g, '/')),
             author: author,
         });
@@ -90,3 +87,125 @@ exports.getSingleArticle = async (req, res, next) => {
     }
 
 }
+
+exports.editArticle = async (req, res, next) => {
+    try {
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            const error = new Error('Validation Faild!, Your Entered Data is Invalid');
+            error.statusCode = 422;
+            throw error;
+        }
+
+        const articleId = req.params.articleId;
+        const title = req.body.title;
+        const content = req.body.content;
+        const author = req.body.author;
+        let imageUrl = req.body.images || [];
+
+        if (req.files && req.files.length > 0) {
+            imageUrl = req.files.map(file => file.path.replace(/\\/g, '/'));
+        }
+
+        if (!Array.isArray(imageUrl)) {
+            const error = new Error('Invalid images data');
+            error.statusCode = 422;
+            throw error;
+        }
+
+        const article = await Article.findById(articleId);
+
+        if (!article) {
+            const error = new Error('Could Not Find Article!');
+            error.statusCode = 404;
+            throw error;
+        }
+
+        if (imageUrl.length > 0 && imageUrl[0] !== article.imageUrl) {
+            await clearImage(article.imageUrl);
+        }
+
+        article.title = title;
+        article.content = content;
+        article.author = author;
+        article.imageUrl = imageUrl;
+
+        await article.save();
+
+        res.status(200).json({
+            message: 'Article Updated Successfully!',
+            article: article,
+        });
+
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+        next(error)
+    }
+}
+
+
+exports.deleteArticle = async (req, res, next) => {
+    try {
+
+        const articleId = req.params.articleId;
+        const article = await Article.findById(articleId);
+
+        if (!article) {
+            const error = new Error('Could Not Find Article!');
+            error.statusCode = 404;
+            throw error;
+        }
+
+
+        await clearImage(article.imageUrl);
+        const deletedArticle = await Article.findByIdAndDelete(articleId);
+
+        res.status(200).json({
+            message: 'Article Deleted Successfully!',
+            article: deletedArticle,
+        });
+
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+        next(error);
+    }
+}
+
+
+const clearImage = async (filePaths) => {
+    console.log(filePaths);
+    if (Array.isArray(filePaths)) {
+        filePaths.forEach((filePath) => {
+            const pathToFile = path.join(__dirname, '..', filePath);
+            console.log('Checking file:', pathToFile);
+            if (fs.existsSync(pathToFile)) {
+                try {
+                    fs.unlinkSync(pathToFile);
+                    console.log('Image Deleted Successfully!');
+                } catch (error) {
+                    console.log('Failed to delete image:', error);
+                }
+            } else {
+                console.log('Image Not Found:', pathToFile);
+            }
+        });
+    } else {
+        const pathToFile = path.join(__dirname, '..', filePaths);
+        console.log('Checking file:', pathToFile);
+        if (fs.existsSync(pathToFile)) {
+            try {
+                fs.unlinkSync(pathToFile);
+                console.log('Image Deleted Successfully!');
+            } catch (error) {
+                console.log('Failed to delete image:', error);
+            }
+        } else {
+            console.log('Image Not Found:', pathToFile);
+        }
+    }
+};
