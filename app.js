@@ -5,6 +5,9 @@ const productRoute = require('./routes/product');
 const articleRoute = require('./routes/article');
 const bestSellingRoute = require('./routes/bestSelling');
 const equippedGymRoute = require('./routes/equippedGym');
+const commentRoute = require('./routes/comment');
+const messageRoute = require('./routes/sendMessage');
+const questionRoute = require('./routes/question');
 const authRoute = require('./routes/auth');
 const bodyParser = require('body-parser');
 const multer = require('multer');
@@ -35,7 +38,14 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use(upload.array('image', 4));
-app.use('/api', productRoute, articleRoute, bestSellingRoute, equippedGymRoute);
+app.use('/api', 
+productRoute, 
+articleRoute, 
+bestSellingRoute, 
+equippedGymRoute, 
+questionRoute, 
+messageRoute,
+commentRoute);
 app.use('/auth', authRoute);
 app.use((error, req, res, next) => {
     console.log(error);

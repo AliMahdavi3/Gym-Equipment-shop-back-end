@@ -37,13 +37,13 @@ exports.createArticle = async (req, res, next) => {
         }
 
         const title = req.body.title;
-        const content = req.body.content;
+        const value = req.body.value;
         const author = req.body.author;
 
 
         const article = new Article({
             title: title,
-            content: content,
+            value: value,
             imageUrl: req.files.map(file => file.path.replace(/\\/g, '/')),
             author: author,
         });
@@ -100,7 +100,7 @@ exports.editArticle = async (req, res, next) => {
 
         const articleId = req.params.articleId;
         const title = req.body.title;
-        const content = req.body.content;
+        const value = req.body.value;
         const author = req.body.author;
         let imageUrl = req.body.images || [];
 
@@ -127,7 +127,7 @@ exports.editArticle = async (req, res, next) => {
         }
 
         article.title = title;
-        article.content = content;
+        article.value = value;
         article.author = author;
         article.imageUrl = imageUrl;
 

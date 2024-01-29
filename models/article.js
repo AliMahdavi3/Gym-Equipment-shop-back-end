@@ -6,7 +6,7 @@ const articleSchema = new Schema({
         type: String,
         required: true
     },
-    content: {
+    value: {
         type: String,
         required: true
     },
