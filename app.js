@@ -12,7 +12,15 @@ const authRoute = require('./routes/auth');
 const bodyParser = require('body-parser');
 const multer = require('multer');
 const path = require('path');
+require('dotenv').config();
 const app = express();
+
+let port = process.env.PORT || 4000;
+let host = process.env.HOST;
+let databaseName = process.env.DATABASE_NAME;
+let databaseHost = process.env.DATABASE_HOST;
+
+const MONGODB_URI = `mongodb://${databaseHost}/${databaseName}`
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -54,11 +62,11 @@ app.use((error, req, res, next) => {
     res.status(status).json({ message: message });
 });
 
-mongoose.connect("mongodb://localhost:27017/gym-equipment")
+mongoose.connect(MONGODB_URI)
     .then(() => {
         console.log('Connected To DB')
     }).catch((error) => {
         console.log(error)
     });
 
-app.listen(4000);
+app.listen(port);
